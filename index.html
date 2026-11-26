@@ -39,4 +39,10 @@ function selectGame(index){current=(index+games.length)%games.length;const g=gam
 $("prev").addEventListener("click",()=>{playRetroClick();selectGame(current-1)});$("next").addEventListener("click",()=>{playRetroClick();selectGame(current+1)});document.querySelectorAll(".dot").forEach((d,i)=>d.addEventListener("click",()=>{playRetroClick();selectGame(i)}));$("soundToggle").addEventListener("click",()=>{soundEnabled=!soundEnabled;$("soundToggle").textContent=soundEnabled?"♪ Suono: ON":"♪ Suono: OFF";$("soundToggle").setAttribute("aria-pressed",String(soundEnabled));if(soundEnabled)playRetroClick()});$("voteButton").addEventListener("click",()=>{const b=$("voteButton");b.classList.toggle("active");b.textContent=b.classList.contains("active")?"⚡ Voto registrato (demo)":"⚡ Vota la community"});
 function searchGames(){const q=$("searchInput").value.trim().toLowerCase();let shown=0;document.querySelectorAll(".game-card").forEach(card=>{const match=!q||card.dataset.search.includes(q)||card.textContent.toLowerCase().includes(q);card.style.display=match?"":"none";if(match)shown++});$("emptyState").style.display=shown?"none":"block";if(q){const match=games.findIndex(g=>g.name.toLowerCase().includes(q));if(match>=0)selectGame(match)}}
 $("searchForm").addEventListener("submit",e=>{e.preventDefault();searchGames()});$("searchInput").addEventListener("input",searchGames);
-</script></body></html>
+</script><script>
+/* Completa gli inviti Netlify Identity aperti dalla homepage nell'area di accesso admin. */
+if (location.hash.includes("invite_token=") || location.hash.includes("confirmation_token=") || location.hash.includes("recovery_token=")) {
+  location.replace("/admin/" + location.hash);
+}
+</script>
+</body></html>
