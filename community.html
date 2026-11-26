@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b111b">
+<meta name="description" content="La classifica dei membri del Cenacolo dei Videogiocatori.">
+<title>Community | Il Cenacolo dei Videogiocatori</title>
+<style>
+:root{--bg:#0b111b;--panel:#142235;--line:#2c4059;--text:#f2f5f8;--muted:#a9b7c8;--gold:#e7bd68;--blue:#66c0f4;--green:#9bcf53}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Arial,Helvetica,sans-serif}
+.wrap{width:min(1050px,calc(100% - 32px));margin:auto}
+header{background:#080d15;border-bottom:1px solid #1d2b3d}.bar{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{font-weight:800;font-size:17px}.brand span{display:block;color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase}.back{color:var(--gold);font-weight:700;font-size:13px}
+main{padding:36px 0 60px}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800}h1{font-size:clamp(30px,5vw,48px);line-height:1.08;margin:8px 0}.intro{color:var(--muted);max-width:700px;margin:0 0 25px}
+.panel{background:linear-gradient(145deg,#182b42,#101b2b);border:1px solid var(--line);border-radius:13px;padding:22px;box-shadow:0 16px 40px #0004}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}.toolbar h2{margin:0;font-size:20px}.sort-label{color:var(--muted);font-size:12px}.sort-label strong{color:var(--gold)}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:#9fb1c5;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px;border-bottom:1px solid var(--line)}td{padding:14px 12px;border-bottom:1px solid #293d54}tbody tr:last-child td{border-bottom:0}.rank{color:var(--gold);font-weight:900;width:64px}.nickname{font-weight:800}.level{color:#dbe6f2}.xp{font-weight:800;color:var(--green);font-variant-numeric:tabular-nums}.newcomer{color:var(--blue);font-size:12px}
+.empty{border:1px dashed #49617c;border-radius:10px;padding:28px 20px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--text);font-size:18px;margin-bottom:7px}.note{font-size:12px;color:#91a4b9;margin-top:18px}
+@media(max-width:560px){.panel{padding:15px}th,td{padding:11px 7px;font-size:12px}.rank{width:38px}.toolbar{align-items:flex-start}}
+</style></head>
+<body>
+<header><div class="wrap bar"><a class="brand" href="index.html">Il Cenacolo dei Videogiocatori<span>Passione · cultura · videogiochi</span></a><a class="back" href="index.html">← Torna alla Home</a></div></header>
+<main class="wrap"><div class="eyebrow">La nostra community</div><h1>Classifica dei membri</h1><p class="intro">Qui trovi tutti i nickname del Cenacolo, ordinati dall'esperienza più alta fino a chi è arrivato da poco. Ogni membro avrà il proprio livello e le Stelline conquistate con i commenti validi e approvati.</p>
+<section class="panel" aria-labelledby="ranking-title"><div class="toolbar"><h2 id="ranking-title">Membri del Cenacolo</h2><div class="sort-label">Ordine: <strong>più esperienza → nuovi arrivati</strong></div></div>
+<div id="roster"><div class="empty"><strong>La classifica si sta preparando.</strong>Non ci sono ancora profili community collegati a questo elenco. Quando sarà attivo il sistema account, qui compariranno automaticamente tutti i nickname, ordinati per esperienza.</div></div>
+<p class="note">L'ordinamento previsto usa prima i punti esperienza in ordine decrescente; a parità di esperienza, viene prima chi è entrato nella community da più tempo. I profili appena registrati compariranno in fondo.</p></section></main>
+<script>
+/* I dati arriveranno dal database degli account. Non vengono mostrati profili dimostrativi.
+   Ordinamento: esperienza decrescente; a parità, data di iscrizione crescente. */
+const members = [];
+members.sort((a,b) => (b.experience-a.experience) || (new Date(a.joinedAt)-new Date(b.joinedAt)));
+const roster=document.getElementById("roster");
+if(members.length){
+ const rows=members.map((m,i)=>'<tr><td class="rank">#'+(i+1)+'</td><td><span class="nickname"></span><div class="newcomer"></div></td><td class="level">Livello '+m.level+'</td><td class="xp">'+m.experience.toLocaleString("it-IT")+' XP</td></tr>').join("");
+ roster.innerHTML='<table><thead><tr><th>Pos.</th><th>Nickname</th><th>Livello</th><th>Esperienza</th></tr></thead><tbody>'+rows+'</tbody></table>';
+ roster.querySelectorAll(".nickname").forEach((el,i)=>el.textContent=members[i].nickname);
+ roster.querySelectorAll(".newcomer").forEach((el,i)=>{el.textContent=members[i].isNew?"Nuovo membro":""});
+}
+</script></body></html>
