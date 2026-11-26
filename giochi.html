@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b111b"><title>Catalogo giochi | Il Cenacolo</title>
+<style>
+:root{--bg:#0b111b;--panel:#142235;--line:#2c4059;--text:#f2f5f8;--muted:#a9b7c8;--gold:#e7bd68;--blue:#66c0f4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#263d59 0,transparent 55%),var(--bg);color:var(--text);font:15px/1.5 Arial,sans-serif}.wrap{width:min(1200px,calc(100% - 28px));margin:auto}header{background:#080d15;border-bottom:1px solid #26384d}.bar{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{font-weight:800}.brand small{display:block;color:var(--gold);font-size:10px;letter-spacing:2px}.back{color:var(--gold);text-decoration:none;font-weight:700}main{padding:32px 0 60px}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:2px;font-weight:800;text-transform:uppercase}h1{font-size:clamp(30px,5vw,48px);margin:7px 0}.intro{color:var(--muted);max-width:750px}.filters{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}.filters input,.filters select{background:#17283b;color:white;border:1px solid #40536b;border-radius:7px;padding:11px 13px}.filters input{flex:1;min-width:190px}.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.card{overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:10px}.cover{height:190px;display:flex;flex-direction:column;justify-content:space-between;padding:13px;position:relative;isolation:isolate;background:linear-gradient(145deg,var(--a),var(--b))}.cover:before{content:"";position:absolute;inset:12px;border:1px solid #ffffff35;transform:skewY(-7deg);z-index:-1}.cover:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-45px;bottom:-55px;background:#ffffff18;filter:blur(2px);z-index:-1}.era{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#fffbdc}.cover strong{font-size:clamp(16px,2vw,23px);line-height:1.02;text-transform:uppercase;text-shadow:0 2px 12px #0009;overflow-wrap:anywhere}.body{padding:11px}.body small{color:var(--muted)}.vote{margin-top:9px;display:block;color:#9bb2c9;font-size:11px}.empty{display:none;color:var(--muted);padding:24px;text-align:center}.legal{color:#91a4b9;font-size:12px;margin-top:24px;border-top:1px solid #2c4059;padding-top:15px}
+@media(max-width:950px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:680px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.cover{height:170px}.bar{min-height:62px}}@media(max-width:360px){.grid{grid-template-columns:1fr 1fr}}
+</style></head><body><header><div class="wrap bar"><a class="brand" href="index.html" style="color:inherit;text-decoration:none">Il Cenacolo dei Videogiocatori<small>PASSIONE · CULTURA · VIDEOGIOCHI</small></a><a class="back" href="index.html">← Home</a></div></header>
+<main class="wrap"><div class="eyebrow">Dagli anni 80 a oggi</div><h1>Catalogo videogiochi</h1><p class="intro">Una prima selezione trasversale di classici e titoli moderni. Le tessere grafiche qui sotto sono illustrazioni originali tipografiche, non copertine ufficiali: così evitiamo di riutilizzare artwork protetti senza permesso. Il catalogo crescerà nel tempo.</p>
+<div class="filters"><input id="q" type="search" placeholder="Cerca un gioco o una serie…"><select id="era"><option value="">Tutte le epoche</option><option>anni 80</option><option>anni 90</option><option>anni 2000</option><option>anni 2010</option><option>anni 2020</option></select><select id="genre"><option value="">Tutti i generi</option><option>Avventura</option><option>RPG</option><option>Azione</option><option>Strategia</option><option>Sport</option><option>Horror</option><option>Platform</option></select></div>
+<div class="grid" id="grid"></div><div class="empty" id="empty">Nessun gioco trovato con questi filtri.</div>
+<p class="legal">Le grafiche delle schede sono create appositamente per il Cenacolo e non riproducono le copertine ufficiali. I nomi dei giochi sono usati per identificarne le schede. Voti e recensioni della community saranno mostrati quando sarà attivo il sistema di account e votazione.</p></main>
+<script>
+const games=[
+["Pac-Man","anni 80","Platform","Arcade · labirinto","#d69a24","#5a241f"],
+["Super Mario Bros.","anni 80","Platform","Nintendo · platform","#e24e35","#702b38"],
+["The Legend of Zelda","anni 80","Avventura","Nintendo · avventura","#b78b38","#263e36"],
+["Tetris","anni 80","Strategia","Puzzle · logica","#327ca8","#202c5a"],
+["Metroid","anni 80","Azione","Nintendo · esplorazione","#9a443e","#242a50"],
+["Prince of Persia","anni 80","Avventura","Platform · avventura","#c08a48","#3c2932"],
+["Doom","anni 90","Azione","FPS · id Software","#a83c2d","#271d2d"],
+["Quake","anni 90","Azione","FPS · arena","#6c4545","#171d2b"],
+["Final Fantasy VII","anni 90","RPG","JRPG · Square","#526d9e","#24243f"],
+["The Legend of Zelda: Ocarina of Time","anni 90","Avventura","Nintendo · avventura","#8a9b55","#253c38"],
+["Resident Evil 2","anni 90","Horror","Survival horror","#a33c36","#24202b"],
+["Metal Gear Solid","anni 90","Azione","Stealth · Konami","#667e8b","#1b2838"],
+["Half-Life","anni 90","Azione","FPS · Valve","#c46c32","#2c2c32"],
+["Age of Empires II","anni 90","Strategia","RTS · storico","#a27a4a","#3b3030"],
+["Baldur's Gate","anni 90","RPG","CRPG · fantasy","#9b633b","#34283a"],
+["The Sims","anni 2000","Strategia","Simulazione di vita","#6b9d72","#244b63"],
+["Grand Theft Auto: San Andreas","anni 2000","Azione","Open world · Rockstar","#b17b46","#3a3544"],
+["The Elder Scrolls IV: Oblivion","anni 2000","RPG","RPG · fantasy","#8e9c8b","#334a57"],
+["The Witcher 3: Wild Hunt","anni 2010","RPG","Open world · fantasy","#8b493d","#202b3d"],
+["Skyrim","anni 2010","RPG","Open world · fantasy","#72818d","#283443"],
+["Dark Souls","anni 2010","RPG","Action RPG · FromSoftware","#8a583c","#24212d"],
+["Bloodborne","anni 2010","Azione","Action RPG · gotico","#773f52","#1b1e2b"],
+["Elden Ring","anni 2020","RPG","Action RPG · open world","#b69a50","#35433a"],
+["Sekiro: Shadows Die Twice","anni 2010","Azione","Action · samurai","#a75b37","#292331"],
+["Red Dead Redemption 2","anni 2010","Azione","Open world · western","#a94d35","#332b2a"],
+["Assassin's Creed II","anni 2000","Azione","Avventura · stealth","#b1a18b","#333846"],
+["Kingdom Come: Deliverance II","anni 2020","RPG","RPG · medievale","#98704a","#3a3331"],
+["Baldur's Gate 3","anni 2020","RPG","CRPG · fantasy","#76558b","#27253c"],
+["Cyberpunk 2077","anni 2020","RPG","RPG · fantascienza","#c39a35","#3d3150"],
+["The Last of Us","anni 2010","Avventura","Survival · narrativa","#6f8054","#27342e"],
+["God of War","anni 2010","Azione","Action adventure · mitologia","#8a5a49","#29394a"],
+["Horizon Zero Dawn","anni 2010","Azione","Open world · sci-fi","#b97846","#2c5960"],
+["Monster Hunter: World","anni 2010","Azione","Action RPG · caccia","#8a8054","#344b50"],
+["Stardew Valley","anni 2010","RPG","Simulazione · indie","#8aa65b","#3b6d63"],
+["Hades","anni 2020","Azione","Roguelike · mitologia","#b34e3d","#3d2948"],
+["Lies of P","anni 2020","Azione","Soulslike · dark fantasy","#8b9a9e","#3b4050"],
+["Black Myth: Wukong","anni 2020","Azione","Action RPG · mitologia","#a47b45","#3b3331"],
+["Kingdom Come: Deliverance","anni 2010","RPG","RPG · medievale","#9a774e","#4b3d36"],
+["Forza Horizon 5","anni 2020","Sport","Corse · open world","#3c9b9b","#273c71"],
+["EA Sports FC","anni 2020","Sport","Calcio · sport","#3b8b5b","#1e3148"],
+["Minecraft","anni 2010","Avventura","Sandbox · creatività","#73975a","#344c39"],
+["Grand Theft Auto V","anni 2010","Azione","Open world · Rockstar","#9c6542","#34413c"],
+["Starfield","anni 2020","RPG","RPG · fantascienza","#627c9b","#29334c"],
+["Lords of the Fallen","anni 2020","Azione","Soulslike · dark fantasy","#6f777e","#34303d"],
+["Assassin's Creed Valhalla","anni 2020","Azione","Open world · vichinghi","#8c7654","#344354"],
+["Resident Evil 4","anni 2000","Horror","Survival horror","#9c493b","#292c37"],
+["Silent Hill 2","anni 2000","Horror","Survival horror · psicologico","#76817c","#33363a"],
+["Street Fighter II","anni 90","Azione","Picchiaduro · arcade","#b75b38","#364b6b"],
+["Sonic the Hedgehog","anni 90","Platform","Platform · SEGA","#367fae","#263e75"],
+["Gran Turismo 7","anni 2020","Sport","Corse · simulazione","#536b8b","#202b3c"],
+["The Witcher 2: Assassins of Kings","anni 2010","RPG","RPG · fantasy","#a16a4a","#37303b"]
+];
+const grid=document.getElementById('grid'),q=document.getElementById('q'),era=document.getElementById('era'),genre=document.getElementById('genre');
+function draw(){const term=q.value.toLowerCase();const list=games.filter(g=>(!term||g.join(' ').toLowerCase().includes(term))&&(!era.value||g[1]===era.value)&&(!genre.value||g[2]===genre.value));grid.innerHTML=list.map(g=>'<article class="card"><div class="cover" style="--a:'+g[4]+';--b:'+g[5]+'"><span class="era">'+g[1]+' · '+g[2]+'</span><strong>'+g[0]+'</strong></div><div class="body"><b>'+g[0]+'</b><br><small>'+g[3]+'</small><span class="vote">★ Voti community: disponibili con gli account</span></div></article>').join('');document.getElementById('empty').style.display=list.length?'none':'block'}
+[q,era,genre].forEach(el=>el.addEventListener('input',draw));draw();
+</script></body></html>
