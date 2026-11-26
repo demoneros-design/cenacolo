@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex,nofollow"><title>Accesso amministratore · Il Cenacolo</title>
 <style>
 :root{color-scheme:dark;--bg:#101820;--panel:#1c2934;--accent:#d8b56d;--text:#f4f1e9;--muted:#b7c0c7}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(ellipse at top,#304452,#101820 60%);font:16px/1.5 Arial,sans-serif;color:var(--text);padding:20px}.card{width:min(100%,430px);padding:32px;background:var(--panel);border:1px solid #50606b;border-radius:16px;box-shadow:0 20px 70px #0008}h1{font-size:25px;margin:0 0 5px}.sub{color:var(--muted);margin:0 0 24px}label{display:block;margin:14px 0 6px;font-size:13px;color:var(--muted)}input{width:100%;padding:13px;border-radius:8px;border:1px solid #586875;background:#101820;color:white;font-size:16px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:8px;background:var(--accent);color:#17212a;font-weight:800;font-size:15px;cursor:pointer}button:disabled{opacity:.6}.msg{min-height:24px;color:#ffd18b;font-size:13px;margin-top:14px}.hidden{display:none}.brand{color:var(--accent);font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(ellipse at top,#304452,#101820 60%);font:16px/1.5 Arial,sans-serif;color:var(--text);padding:20px}.card{width:min(100%,430px);padding:32px;background:var(--panel);border:1px solid #50606b;border-radius:16px;box-shadow:0 20px 70px #0008}h1{font-size:25px;margin:0 0 5px}.sub{color:var(--muted);margin:0 0 24px}label{display:block;margin:14px 0 6px;font-size:13px;color:var(--muted)}input{width:100%;padding:13px;border-radius:8px;border:1px solid #586875;background:#101820;color:white;font-size:16px}button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:8px;background:var(--accent);color:#17212a;font-weight:800;font-size:15px;cursor:pointer}button:disabled{opacity:.6;cursor:wait}.msg{min-height:24px;color:#ffd18b;font-size:13px;margin-top:14px}.hidden{display:none}.brand{color:var(--accent);font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
 </style></head>
 <body><main class="card">
 <div class="brand">Il Cenacolo dei Videogiocatori</div>
@@ -13,30 +13,68 @@
 <p class="sub">Accesso riservato all'amministratore del sito.</p>
 <form id="authForm">
 <div id="emailField"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div>
-<label id="passwordLabel" for="password">Password</label><input id="password" type="password" autocomplete="current-password" required>
-<button id="submit" type="submit">Accedi</button>
+<label id="passwordLabel" for="password">Password</label><input id="password" type="password" autocomplete="current-password" required minlength="8">
+<button id="submit" type="submit" disabled>Verifica collegamento…</button>
 </form>
-<p class="msg" id="message" role="status"></p>
+<p class="msg" id="message" role="status" aria-live="polite"></p>
 </main>
 <script type="module">
-import { login, logout, getUser, handleAuthCallback, acceptInvite, refreshSession } from "https://esm.sh/@netlify/identity";
+import { login, logout, getUser, handleAuthCallback, acceptInvite } from "https://esm.sh/@netlify/identity";
 const form=document.getElementById("authForm"), email=document.getElementById("email"), password=document.getElementById("password"), label=document.getElementById("passwordLabel"), submit=document.getElementById("submit"), message=document.getElementById("message");
-let inviteToken=null;
+let inviteToken=null, ready=false;
 const say=t=>message.textContent=t;
 const isAdmin=u=>!!u && (u.email||"").toLowerCase()==="moriconieros@gmail.com" && (u.roles||[]).includes("admin");
-async function checkUser(){const u=await getUser();if(isAdmin(u)){location.replace("/area-admin/");return true}return false}
-try{
- const callback=await handleAuthCallback();
- if(callback?.type==="invite" && callback.token){inviteToken=callback.token;email.closest("div").classList.add("hidden");label.textContent="Scegli una password";submit.textContent="Attiva account amministratore";say("Invito verificato: scegli la tua password.");}
- else if(callback){say("Verifica completata. Ora puoi accedere.");}
- await checkUser();
-}catch(e){say("Il collegamento non è valido o è scaduto. Richiedi un nuovo invito.");}
+function setReady(){ready=true;submit.disabled=false;}
 form.addEventListener("submit",async e=>{
- e.preventDefault();submit.disabled=true;say("Accesso in corso…");
+ e.preventDefault();
+ if(!ready)return;
+ submit.disabled=true;
  try{
-  if(inviteToken){await acceptInvite(inviteToken,password.value);await refreshSession();say("Account attivato. Ora accedi con la password scelta.");inviteToken=null;email.closest("div").classList.remove("hidden");label.textContent="Password";submit.textContent="Accedi";}
-  else{await login(email.value,password.value);const u=await getUser();if(!isAdmin(u)){await logout();throw new Error("Questo account non è autorizzato come amministratore.");}location.assign("/area-admin/");}
- }catch(err){say(err.message||"Accesso non riuscito. Controlla email e password.");}
- finally{submit.disabled=false;}
+  if(inviteToken){
+   say("Attivazione account in corso…");
+   const invitedUser=await acceptInvite(inviteToken,password.value);
+   inviteToken=null;
+   if(!invitedUser?.email)throw new Error("Account creato, ma non riesco a recuperare l'indirizzo email. Torna qui e accedi con l'email dell'invito.");
+   email.value=invitedUser.email;
+   document.getElementById("emailField").classList.remove("hidden");
+   label.textContent="Password";
+   submit.textContent="Accedi";
+   say("Account attivato. Sto effettuando l'accesso…");
+   await login(invitedUser.email,password.value);
+   const u=await getUser();
+   if(!isAdmin(u)){await logout();throw new Error("L'account è stato creato, ma il ruolo amministratore non risulta ancora attivo. Riprova ad accedere tra un minuto.");}
+   say("Accesso riuscito. Apro l'area amministratore…");
+   location.assign("/area-admin/");
+  }else{
+   say("Accesso in corso…");
+   await login(email.value,password.value);
+   const u=await getUser();
+   if(!isAdmin(u)){await logout();throw new Error("Questo account non è autorizzato come amministratore.");}
+   location.assign("/area-admin/");
+  }
+ }catch(err){say(err?.message||"Operazione non riuscita. Riprova.");}
+ finally{setReady();}
 });
+(async()=>{
+ try{
+  const callback=await handleAuthCallback();
+  if(callback?.type==="invite" && callback.token){
+   inviteToken=callback.token;
+   document.getElementById("emailField").classList.add("hidden");
+   label.textContent="Scegli una password";
+   submit.textContent="Attiva account amministratore";
+   say("Invito verificato: scegli una password di almeno 8 caratteri.");
+  }else if(callback){
+   say("Verifica completata. Ora puoi accedere.");
+  }else{
+   say("Inserisci le credenziali dell'amministratore.");
+  }
+  setReady();
+  getUser().then(u=>{if(isAdmin(u))location.replace("/area-admin/");}).catch(()=>{});
+ }catch(e){
+  say("Non riesco a verificare il collegamento. Riapri il link dell'invito oppure richiedine uno nuovo.");
+  submit.textContent="Riprova a caricare";
+  setReady();
+ }
+})();
 </script></body></html>
