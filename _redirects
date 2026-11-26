@@ -1,0 +1,4 @@
+/area-admin /area-admin/index.html 200! Role=admin
+/area-admin /admin/ 401!
+/area-admin/* /area-admin/:splat 200! Role=admin
+/area-admin/* /admin/ 401!
